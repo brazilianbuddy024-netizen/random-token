@@ -2,31 +2,34 @@ name: Generate Random Tokens
 
 on:
   schedule:
-    - cron: '*/30 * * * * *'  # Runs every 30 seconds
-  workflow_dispatch:
+    - cron: '*/5 * * * *'  # Every 5 minutes (easier to test)
+  workflow_dispatch:  # Allows manual run
 
 jobs:
   generate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
       
-      - name: Generate tokens
+      - name: Create tokens.json
         run: |
-          cat > tokens.json << 'EOF'
-          {
+          echo '{
             "tokens": [
               {"name": "Solana", "price": 0.001234, "change": 5.2},
               {"name": "Raydium", "price": 0.002345, "change": -2.1},
-              {"name": "Jupiter", "price": 0.003456, "change": 8.3}
+              {"name": "Jupiter", "price": 0.003456, "change": 8.3},
+              {"name": "Bonk", "price": 0.000001, "change": 15.7},
+              {"name": "Pyth", "price": 0.004567, "change": -1.5}
             ]
-          }
-          EOF
+          }' > tokens.json
           
       - name: Commit and push
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
           git add tokens.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update random tokens"
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update tokens"
           git push
