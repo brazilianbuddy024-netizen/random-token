@@ -1,0 +1,24 @@
+name: Update Tokens
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Create tokens.json
+        run: |
+          echo '{"tokens":[{"name":"Solana","price":1.23}]}' > tokens.json
+          
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add tokens.json
+          git commit -m "Update tokens" || true
+          git push
